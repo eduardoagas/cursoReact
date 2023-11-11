@@ -23,6 +23,16 @@ app.get('/teste', (request, response) =>{
     response.send("endpoint de teste!")
 } );
 
+app.get('/buscarClientes', (request, response) =>{
+    const result = db.BuscarClientes();
+    result.then(data => response.json(data)).catch(err => console.log(err));
+})
+
+app.post('/NovoCliente', (request, response) =>{
+    const result = db.NovoCliente(request.body);
+    result.then(data => response.json(data)).catch(err => console.log(err));
+})
+
 app.listen(process.env.BACKENDPORT, () =>{
     console.log("servidor rodando na porta " +  process.env.BACKENDPORT)
 });

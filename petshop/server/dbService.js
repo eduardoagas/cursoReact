@@ -20,15 +20,48 @@ connection.connect((err) => {
     }
 })
 
-class DbService{
+class DbService {
     static instance;
 
-    static getDbServiceInstance(){
-        if(!this.instance){
+    static getDbServiceInstance() {
+        if (!this.instance) {
             this.instance = new DbService();
         }
         return this.instance;
     }
+
+    async BuscarClientes() {
+        return new Promise((resolve, reject) => {
+            const query = "SELECT * FROM tbl_clientes;";
+            connection.query(query, (err, result) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    resolve(result);
+                }
+            })
+        })
+    }
+
+    async NovoCliente(data) {
+        try {
+            const query = "INSERT INTO tbl_clientes (nome, email) VALUES (?,?)"
+            const nome = data.nome
+            const email = data.email
+            const response = await new Promise((resolve, reject) => {
+                connection.query(query, [nome, email], (err, result) => {
+                    if (err) reject(new Error(err.message))
+                    resolve(result)
+                })
+            })
+            console.log("Cliente inserido com sucesso!");
+            return response;
+        } catch (e) {
+            console.log("Erro ao inserir cliente: " + e);
+
+        }
+    }
+
 }
 
 module.exports = DbService;

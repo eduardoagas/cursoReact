@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Container, Button, Modal, Form, Table, FormLabel, FormControl, FormGroup } from 'react-bootstrap';
-
+import Api from "../Api";
 
 
 const Clientes = () => {
     //funções e variáveis
 
+    useEffect(() => {
+        const getClientes = async() => {
+            const responseClientes = await Api.get('/buscarClientes');
+            setClientes(responseClientes.data);
+            console.log(responseClientes)
+        }
+
+        getClientes();
+    }, [])
+
     const [showModal, setShowModal] = useState(false);
 
     const [clientes, setClientes] = useState([
-        {id: 1, name: 'nome1', email: 'nome1@gmail.com'}
+        {id: 1, nome: 'nome1', email: 'nome1@gmail.com'}
     ])
 
     const [newClientName, setNewClientName] = useState(' ')
@@ -21,15 +31,21 @@ const Clientes = () => {
     const handleClose = () => {
         setShowModal(false);
     }
-    const handleSave = (e) =>{
+    const handleSave = async (e) =>{
         e.preventDefault();
-        console.log("oi")
         const newClient = {
             id: clientes.length + 1,
-            name: newClientName,
+            nome: newClientName,
             email: newClientEmail
         }
-        setClientes([...clientes, newClient]);
+
+        const response = await Api.post('/NovoCliente', JSON.stringify(newClient),{
+            headers: {'Content-Type' : 'application/json'}
+        });
+
+        setClientes([...clientes, newClient])
+
+
         handleClose();
         setNewClientName(' ');
         setNewClientEmail(' ');
@@ -91,7 +107,7 @@ const Clientes = () => {
                     {clientes.map((client) => (
                         <tr key={client.id}>
                             <td>{client.id}</td>
-                            <td>{client.name}</td>
+                            <td>{client.nome}</td>
                             <td>{client.email}</td>
                         </tr>
                     ))}
